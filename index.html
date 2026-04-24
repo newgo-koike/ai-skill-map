@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIスキルマップ - 小池雄悟</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0a1a;color:#e0e0f0;font-family:'Noto Sans JP',sans-serif;min-height:100vh}
+  .container{max-width:960px;margin:0 auto;padding:20px 16px}
+
+  /* スキャンライン */
+  body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+    pointer-events:none;z-index:9999}
+
+  /* ========== ヘッダー ========== */
+  .hero{display:flex;align-items:center;gap:20px;background:#12122a;border:1px solid #2a2a5a;
+    border-radius:12px;padding:20px 24px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,#ffd700,transparent)}
+  .avatar{width:80px;height:80px;border-radius:50%;border:3px solid #ffd700;
+    background:linear-gradient(135deg,#1a1a3a,#2a2a5a);display:flex;align-items:center;
+    justify-content:center;flex-shrink:0;box-shadow:0 0 16px rgba(255,215,0,0.15)}
+  .hero-info{flex:1;min-width:0}
+  .hero-name{font-size:18px;font-weight:900;color:#ffd700}
+  .hero-class{font-size:11px;color:#00ddff;margin-top:2px}
+  .hero-right{text-align:right;flex-shrink:0}
+  .lv{font-family:'Press Start 2P',monospace;font-size:18px;color:#ffd700;
+    text-shadow:0 0 12px rgba(255,215,0,0.4)}
+  .lv-sub{font-size:10px;color:#8888aa;margin-top:4px}
+  .xp-outer{width:140px;height:8px;background:#1a1a2e;border-radius:4px;margin-top:6px;
+    border:1px solid #2a2a5a;overflow:hidden}
+  .xp-inner{height:100%;width:58%;background:linear-gradient(90deg,#00aa55,#00ff88);
+    border-radius:4px;box-shadow:0 0 8px rgba(0,255,136,0.3)}
+
+  /* ========== タブ ========== */
+  .tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid #1e293b;padding-bottom:0}
+  .tab{padding:10px 20px;font-size:13px;font-weight:700;color:#64748b;cursor:pointer;
+    border-bottom:2px solid transparent;transition:all 0.2s}
+  .tab:hover{color:#94a3b8}
+  .tab.active{color:#ffd700;border-bottom-color:#ffd700}
+  .tab-panel{display:none}
+  .tab-panel.active{display:block}
+
+  /* ========== ポートフォリオ ========== */
+  .port-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .port-card{background:#12122a;border:1px solid #2a2a5a;border-radius:10px;padding:16px;
+    transition:all 0.2s;position:relative;overflow:hidden}
+  .port-card:hover{border-color:#ffd700;box-shadow:0 0 12px rgba(255,215,0,0.08);transform:translateY(-1px)}
+  .port-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .port-card.type-skill::before{background:linear-gradient(90deg,#00ff88,transparent)}
+  .port-card.type-system::before{background:linear-gradient(90deg,#4488ff,transparent)}
+  .port-card.type-auto::before{background:linear-gradient(90deg,#aa66ff,transparent)}
+  .port-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .port-icon{font-size:20px}
+  .port-title{font-size:13px;font-weight:700;flex:1}
+  .port-tag{font-size:9px;padding:2px 8px;border-radius:10px;flex-shrink:0}
+  .port-tag.skill{background:rgba(0,255,136,0.12);color:#00ff88}
+  .port-tag.system{background:rgba(68,136,255,0.12);color:#4488ff}
+  .port-tag.auto{background:rgba(170,102,255,0.12);color:#aa66ff}
+  .port-desc{font-size:11px;color:#8888aa;line-height:1.5}
+  .port-tech{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+  .port-tech span{font-size:9px;padding:2px 7px;background:#1a1a2e;border:1px solid #2a2a5a;
+    border-radius:8px;color:#94a3b8}
+
+  /* ========== スキルマップ ========== */
+  .section-title{font-size:14px;font-weight:700;margin-bottom:12px;
+    display:flex;align-items:center;gap:8px}
+  .section-title .count{font-size:11px;color:#64748b;font-weight:400}
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  .legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#8888aa}
+  .legend-dot{width:8px;height:8px;border-radius:50%}
+
+  .filters{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+  .fbtn{font-size:10px;padding:4px 12px;border-radius:16px;border:1px solid #2a2a5a;
+    background:#12122a;color:#8888aa;cursor:pointer;transition:all 0.15s}
+  .fbtn:hover{border-color:#4a4a7a}
+  .fbtn.on{background:#2a2a5a;color:#e0e0f0;border-color:#4a4a7a}
+
+  .cat{margin-bottom:16px}
+  .cat-hd{display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;user-select:none;
+    border-bottom:1px solid #1a1a2e;margin-bottom:4px}
+  .cat-hd:hover .cat-nm{color:#fff}
+  .cat-ic{font-size:16px}
+  .cat-nm{font-size:13px;font-weight:700;flex:1}
+  .cat-ct{font-size:10px;color:#64748b}
+  .cat-arr{font-size:10px;color:#64748b;transition:transform 0.15s}
+  .cat-arr.shut{transform:rotate(-90deg)}
+  .cat-body{display:flex;flex-direction:column;gap:2px}
+  .cat-body.hide{display:none}
+
+  .sk{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;
+    cursor:pointer;transition:background 0.1s;user-select:none}
+  .sk:hover{background:#1a1a2e}
+  .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:all 0.15s}
+  .dot.done{background:#22c55e;box-shadow:0 0 5px rgba(34,197,94,0.4)}
+  .dot.want{background:#06b6d4;box-shadow:0 0 5px rgba(6,182,212,0.3)}
+  .dot.none{background:#334155}
+  .sk-name{font-size:12px;flex:1}
+  .sk.is-done .sk-name{color:#e0e0f0}
+  .sk.is-want .sk-name{color:#06b6d4}
+  .sk.is-none .sk-name{color:#555}
+  .sk-note{font-size:9px;color:#555;max-width:160px;text-align:right;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis}
+  .sk-lbl{font-size:8px;padding:2px 7px;border-radius:8px;flex-shrink:0;white-space:nowrap}
+  .sk-lbl.done{background:rgba(34,197,94,0.12);color:#22c55e}
+  .sk-lbl.want{background:rgba(6,182,212,0.12);color:#06b6d4}
+  .sk-lbl.none{background:rgba(100,116,139,0.08);color:#555}
+
+  /* 教えてボタン */
+  .teach-btn{font-size:9px;padding:2px 8px;border-radius:8px;border:1px solid #2a2a5a;
+    background:transparent;color:#8888aa;cursor:pointer;transition:all 0.15s;margin-left:4px;flex-shrink:0}
+  .teach-btn:hover{border-color:#ff8844;color:#ff8844}
+  .teach-btn.on{background:rgba(255,136,68,0.15);border-color:#ff8844;color:#ff8844}
+
+  /* 追加フォーム */
+  .add-area{margin-top:16px;padding:16px;background:#12122a;border:1px dashed #2a2a5a;border-radius:10px}
+  .add-row{display:flex;gap:8px;flex-wrap:wrap}
+  .add-input{flex:1;min-width:120px;padding:8px 12px;background:#0a0a1a;border:1px solid #2a2a5a;
+    border-radius:8px;color:#e0e0f0;font-size:12px;outline:none}
+  .add-input:focus{border-color:#06b6d4}
+  .add-input::placeholder{color:#444}
+  .add-select{padding:8px;background:#0a0a1a;border:1px solid #2a2a5a;border-radius:8px;
+    color:#e0e0f0;font-size:12px;outline:none}
+  .add-btn{padding:8px 16px;background:#06b6d4;border:none;border-radius:8px;color:#0a0a1a;
+    font-size:12px;font-weight:700;cursor:pointer;transition:background 0.15s}
+  .add-btn:hover{background:#22d3ee}
+
+  /* ========== タイムライン ========== */
+  .tl{position:relative;padding-left:32px;margin-top:8px}
+  .tl::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;
+    background:linear-gradient(to bottom,#ffd700,#aa66ff,#00ddff,#00ff88)}
+  .tl-item{position:relative;margin-bottom:20px;opacity:0;transform:translateX(-8px);
+    animation:tlIn 0.4s forwards}
+  @keyframes tlIn{to{opacity:1;transform:translateX(0)}}
+  .tl-item:nth-child(1){animation-delay:.2s}
+  .tl-item:nth-child(2){animation-delay:.35s}
+  .tl-item:nth-child(3){animation-delay:.5s}
+  .tl-item:nth-child(4){animation-delay:.65s}
+  .tl-item:nth-child(5){animation-delay:.8s}
+  .tl-item:nth-child(6){animation-delay:.95s}
+  .tl-item:nth-child(7){animation-delay:1.1s}
+  .tl-dot{position:absolute;left:-28px;top:3px;width:10px;height:10px;border-radius:50%;
+    border:2px solid;background:#0a0a1a}
+  .tl-date{font-size:10px;color:#64748b}
+  .tl-lv{font-family:'Press Start 2P',monospace;font-size:7px;color:#ffd700;margin-left:6px}
+  .tl-title{font-size:13px;font-weight:700;margin-top:2px}
+  .tl-desc{font-size:11px;color:#8888aa;margin-top:2px;line-height:1.5}
+
+  /* ========== 教えてリスト ========== */
+  .teach-list{margin-top:8px}
+  .teach-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#1a1a2e;
+    border:1px solid #2a2a5a;border-radius:8px;margin-bottom:6px}
+  .teach-item .dot{background:#ff8844;box-shadow:0 0 5px rgba(255,136,68,0.3)}
+  .teach-item-name{font-size:12px;flex:1}
+  .teach-item-cat{font-size:9px;color:#64748b}
+  .teach-remove{font-size:10px;color:#64748b;cursor:pointer;padding:2px 8px;border-radius:6px;
+    border:1px solid #2a2a5a;background:transparent;transition:all 0.15s}
+  .teach-remove:hover{border-color:#ff4444;color:#ff4444}
+  .empty-msg{font-size:12px;color:#555;text-align:center;padding:20px}
+
+  /* レスポンシブ */
+  @media(max-width:600px){
+    .hero{flex-direction:column;text-align:center}
+    .hero-right{text-align:center}
+    .xp-outer{margin:6px auto 0}
+    .port-grid{grid-template-columns:1fr}
+    .sk-note{display:none}
+    .tabs{overflow-x:auto}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ヒーロー -->
+  <div class="hero">
+    <div class="avatar">
+      <svg width="44" height="44" viewBox="0 0 60 60">
+        <rect x="22" y="8" width="16" height="16" rx="3" fill="#ffd700"/>
+        <rect x="18" y="24" width="24" height="20" rx="3" fill="#4488ff"/>
+        <rect x="18" y="44" width="10" height="12" rx="2" fill="#333"/>
+        <rect x="32" y="44" width="10" height="12" rx="2" fill="#333"/>
+        <rect x="10" y="26" width="8" height="14" rx="2" fill="#4488ff"/>
+        <rect x="42" y="26" width="8" height="14" rx="2" fill="#4488ff"/>
+        <circle cx="27" cy="15" r="2" fill="#0a0a1a"/>
+        <circle cx="33" cy="15" r="2" fill="#0a0a1a"/>
+        <rect x="28" y="19" width="4" height="1.5" rx="0.75" fill="#0a0a1a"/>
+      </svg>
+    </div>
+    <div class="hero-info">
+      <div class="hero-name">小池 雄悟</div>
+      <div class="hero-class">AI自動化魔導士 / プロンプト設計士</div>
+    </div>
+    <div class="hero-right">
+      <div class="lv">Lv.58</div>
+      <div class="lv-sub">58 / 100</div>
+      <div class="xp-outer"><div class="xp-inner"></div></div>
+    </div>
+  </div>
+
+  <!-- タブ -->
+  <div class="tabs">
+    <div class="tab active" data-tab="portfolio">&#x1F4BC; ポートフォリオ</div>
+    <div class="tab" data-tab="skillmap">&#x1F5FA; スキルマップ</div>
+    <div class="tab" data-tab="timeline">&#x1F4C8; 成長タイムライン</div>
+    <div class="tab" data-tab="teach">&#x1F64B; 教えてリスト</div>
+  </div>
+
+  <!-- ===== ポートフォリオ ===== -->
+  <div class="tab-panel active" id="panel-portfolio">
+    <div class="section-title">構築した武器たち</div>
+    <div class="port-grid">
+      <div class="port-card type-auto">
+        <div class="port-head"><span class="port-icon">&#x1F4DD;</span><span class="port-title">議事録自動作成</span><span class="port-tag auto">自動化</span></div>
+        <div class="port-desc">Google Meet・Plaud・Zoomの文字起こしから議事録を自動生成し、NotionのMinute DBに保存 → Googleドキュメントにコピー</div>
+        <div class="port-tech"><span>Notion MCP</span><span>Google Drive</span><span>文字起こし解析</span></div>
+      </div>
+      <div class="port-card type-system">
+        <div class="port-head"><span class="port-icon">&#x1F4CA;</span><span class="port-title">経営管理ダッシュボード</span><span class="port-tag system">システム</span></div>
+        <div class="port-desc">はなひらくグループの経営管理シート（Excel）からChart.jsのHTMLダッシュボードを自動生成。パスワード保護付きでNetlifyデプロイ</div>
+        <div class="port-tech"><span>Chart.js</span><span>Netlify</span><span>KPI</span><span>水位ゲージ</span></div>
+      </div>
+      <div class="port-card type-auto">
+        <div class="port-head"><span class="port-icon">&#x1F91D;</span><span class="port-title">採用パイプライン</span><span class="port-tag auto">自動化</span></div>
+        <div class="port-desc">面接（NotionAIメモ）→ 求職者管理DB自動登録 → 雇用契約書（労働条件通知書）HTML/PDF自動生成の一連フロー</div>
+        <div class="port-tech"><span>Notion MCP</span><span>HTML→PDF</span><span>Chrome headless</span></div>
+      </div>
+      <div class="port-card type-system">
+        <div class="port-head"><span class="port-icon">&#x1F3E2;</span><span class="port-title">はなひらく運営ポータル</span><span class="port-tag system">システム</span></div>
+        <div class="port-desc">運営メンバー向けWebポータル。月次リマインダー、書類テンプレート、ショートカット集、権限管理</div>
+        <div class="port-tech"><span>Next.js</span><span>Supabase</span><span>TypeScript</span><span>Tailwind</span></div>
+      </div>
+      <div class="port-card type-system">
+        <div class="port-head"><span class="port-icon">&#x1F4B0;</span><span class="port-title">PHC売上管理システム</span><span class="port-tag system">システム</span></div>
+        <div class="port-desc">案件別売上・経費・メンバー配分を自動計算。ダッシュボード付き。税金推定（消費税・法人税・住民税・事業税）</div>
+        <div class="port-tech"><span>Google Sheets</span><span>税金計算</span><span>配分ロジック</span></div>
+      </div>
+      <div class="port-card type-auto">
+        <div class="port-head"><span class="port-icon">&#x1F4CB;</span><span class="port-title">保険契約自動登録</span><span class="port-tag auto">自動化</span></div>
+        <div class="port-desc">ソニー生命・メディケア生命の契約スクリーンショットを読み取り、Excel契約一覧 + Notion保険DBに自動登録</div>
+        <div class="port-tech"><span>Vision/OCR</span><span>Notion MCP</span><span>Excel</span></div>
+      </div>
+      <div class="port-card type-auto">
+        <div class="port-head"><span class="port-icon">&#x1F4E8;</span><span class="port-title">ソニー生命 送付状</span><span class="port-tag auto">自動化</span></div>
+        <div class="port-desc">書類の写メから証券番号・契約者名等を読み取り、送付状HTML → PDF自動生成</div>
+        <div class="port-tech"><span>Vision/OCR</span><span>HTML→PDF</span></div>
+      </div>
+      <div class="port-card type-skill">
+        <div class="port-head"><span class="port-icon">&#x1F3A4;</span><span class="port-title">セミナースライド生成</span><span class="port-tag skill">スキル</span></div>
+        <div class="port-desc">Slidevでプロ品質のセミナー・登壇スライドを自動生成。devサーバー起動まで自動化</div>
+        <div class="port-tech"><span>Slidev</span><span>Markdown</span><span>npm</span></div>
+      </div>
+      <div class="port-card type-skill">
+        <div class="port-head"><span class="port-icon">&#x1F50D;</span><span class="port-title">スライドレビューAI</span><span class="port-tag skill">スキル</span></div>
+        <div class="port-desc">タイポグラフィ・レイアウト・色・情報密度・会場適合性の観点からスライドを自動レビュー</div>
+        <div class="port-tech"><span>デザイン分析</span><span>多形式対応</span></div>
+      </div>
+      <div class="port-card type-skill">
+        <div class="port-head"><span class="port-icon">&#x1F4D6;</span><span class="port-title">新書エッセイ執筆</span><span class="port-tag skill">スキル</span></div>
+        <div class="port-desc">キーワードからWeb検索 → 15分で読める4,000〜5,000字の書き下ろし新書をNotionに保存</div>
+        <div class="port-tech"><span>Web検索</span><span>Notion MCP</span><span>だ・である調</span></div>
+      </div>
+      <div class="port-card type-skill">
+        <div class="port-head"><span class="port-icon">&#x1F3E0;</span><span class="port-title">不動産CFシミュレーション</span><span class="port-tag skill">スキル</span></div>
+        <div class="port-desc">初期費用・融資条件・家賃収入から10年間の収支シミュレーションHTMLを生成、GitHub Pagesにデプロイ</div>
+        <div class="port-tech"><span>HTML</span><span>GitHub Pages</span><span>CF計算</span></div>
+      </div>
+      <div class="port-card type-skill">
+        <div class="port-head"><span class="port-icon">&#x267B;</span><span class="port-title">メタスキル（create-skill）</span><span class="port-tag skill">スキル</span></div>
+        <div class="port-desc">Claude Codeスキルを自動生成するメタスキル。SKILL.mdの作成からNotion DB登録まで自動化</div>
+        <div class="port-tech"><span>SKILL.md</span><span>Notion DB</span><span>自己増殖</span></div>
+      </div>
+      <div class="port-card type-skill">
+        <div class="port-head"><span class="port-icon">&#x1F5BC;</span><span class="port-title">デザイン / 名刺</span><span class="port-tag skill">スキル</span></div>
+        <div class="port-desc">サムネイル・フライヤー・バナー・名刺などのグラフィックデザインをHTML/CSSで生成</div>
+        <div class="port-tech"><span>HTML/CSS</span><span>印刷対応</span></div>
+      </div>
+      <div class="port-card type-skill">
+        <div class="port-head"><span class="port-icon">&#x1F4BC;</span><span class="port-title">ベンチャー会議シミュレーション</span><span class="port-tag skill">スキル</span></div>
+        <div class="port-desc">事業アイディアから6人の専門家（CEO/CTO/CMO/CFO/PM/Devil's Advocate）が議論をシミュレーション</div>
+        <div class="port-tech"><span>ロールプレイ</span><span>戦略設計</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== スキルマップ ===== -->
+  <div class="tab-panel" id="panel-skillmap">
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> できる</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div> やりたい</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#334155"></div> 未着手</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ff8844"></div> 教えて！</div>
+    </div>
+    <div class="filters">
+      <button class="fbtn on" data-f="all">すべて</button>
+      <button class="fbtn" data-f="done">できる</button>
+      <button class="fbtn" data-f="want">やりたい</button>
+      <button class="fbtn" data-f="none">未着手</button>
+      <button class="fbtn" data-f="teach">教えて！</button>
+    </div>
+    <div id="skillApp"></div>
+
+    <!-- 追加フォーム -->
+    <div class="add-area">
+      <div style="font-size:12px;font-weight:700;margin-bottom:8px">やりたいことを追加</div>
+      <div class="add-row">
+        <input class="add-input" id="addName" placeholder="スキル名">
+        <input class="add-input" id="addNote" placeholder="メモ（任意）" style="max-width:180px">
+        <select class="add-select" id="addCat"></select>
+        <button class="add-btn" onclick="addItem()">追加</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== タイムライン ===== -->
+  <div class="tab-panel" id="panel-timeline">
+    <div class="tl">
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:#8888aa"></div>
+        <div class="tl-date">2025年 <span class="tl-lv">Lv.1</span></div>
+        <div class="tl-title" style="color:#8888aa">AI冒険の始まり</div>
+        <div class="tl-desc">岩崎くんからClaudeを教わる。初めてのプロンプト、初めてのコード生成。全てが新しかった。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:#ff8844"></div>
+        <div class="tl-date">最初の一歩 <span class="tl-lv">Lv.15</span></div>
+        <div class="tl-title" style="color:#ff8844">書類自動化</div>
+        <div class="tl-desc">ソニー生命の送付状を写メからHTML/PDF自動生成。「え、こんなことできるの？」の連続。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:#aa66ff"></div>
+        <div class="tl-date">スキル拡張期 <span class="tl-lv">Lv.28</span></div>
+        <div class="tl-title" style="color:#aa66ff">Notion MCP習得</div>
+        <div class="tl-desc">議事録自動作成、保険契約スクショからDB登録。手作業が次々と消えていく。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:#00ff88"></div>
+        <div class="tl-date">システム構築編 <span class="tl-lv">Lv.38</span></div>
+        <div class="tl-title" style="color:#00ff88">ダッシュボード & 分析</div>
+        <div class="tl-desc">はなひらく経営管理ダッシュボードをChart.jsで構築。Netlifyデプロイ。データが動き出す。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:#4488ff"></div>
+        <div class="tl-date">上級者への道 <span class="tl-lv">Lv.46</span></div>
+        <div class="tl-title" style="color:#4488ff">フルスタック挑戦</div>
+        <div class="tl-desc">はなひらく運営ポータルをNext.js + Supabaseで設計。認証、DB、UIまで一気通貫。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:#ff66aa"></div>
+        <div class="tl-date">パイプライン習得 <span class="tl-lv">Lv.52</span></div>
+        <div class="tl-title" style="color:#ff66aa">採用業務の完全自動化</div>
+        <div class="tl-desc">面接 → 求職者DB → 雇用契約書PDF。一連の業務フローを完全自動化。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:#ffd700"></div>
+        <div class="tl-date">2026年4月 <span class="tl-lv">Lv.58 現在地</span></div>
+        <div class="tl-title" style="color:#ffd700">スキルがスキルを生む</div>
+        <div class="tl-desc">メタスキル「create-skill」構築。PHC売上管理システム設計完了。武器が自己増殖し始める。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 教えてリスト ===== -->
+  <div class="tab-panel" id="panel-teach">
+    <div class="section-title">誰かに教えてほしいスキル</div>
+    <div style="font-size:11px;color:#64748b;margin-bottom:12px">スキルマップで「教えて」ボタンを押すとここに追加されます</div>
+    <div id="teachList"></div>
+  </div>
+
+</div>
+
+<script>
+const SKILLS=[
+  {cat:"プロンプト & AIチャット",icon:"&#x1F4AC;",items:[
+    {name:"プロンプト設計",note:"スキル用プロンプト",s:"done"},
+    {name:"システムプロンプト",note:"SKILL.md / CLAUDE.md",s:"done"},
+    {name:"多段階推論",note:"パイプライン型",s:"done"},
+    {name:"画像入力（Vision）",note:"OCR / スクショ解析",s:"done"},
+    {name:"Few-shot / CoT",note:"高度なプロンプト技法",s:"want"},
+  ]},
+  {cat:"AIアシスト開発",icon:"&#x1F4BB;",items:[
+    {name:"HTML / CSS / JS",note:"ダッシュボード、PDF",s:"done"},
+    {name:"Claude Code CLI",note:"スキル、MCP、フック",s:"done"},
+    {name:"Next.js / React",note:"ポータル構築中",s:"done"},
+    {name:"TypeScript",note:"ポータルのコード",s:"done"},
+    {name:"Git / GitHub",note:"バージョン管理",s:"done"},
+    {name:"Python",note:"データ処理",s:"want"},
+    {name:"CI/CD",note:"GitHub Actions",s:"want"},
+    {name:"Docker / コンテナ",note:"環境管理",s:"none"},
+  ]},
+  {cat:"データ & 分析",icon:"&#x1F4CA;",items:[
+    {name:"Chart.js可視化",note:"ダッシュボード",s:"done"},
+    {name:"Excel/Sheetsデータ処理",note:"読取・計算",s:"done"},
+    {name:"KPI設計",note:"経営指標",s:"done"},
+    {name:"Google Sheets API",note:"リアルタイム同期",s:"want"},
+    {name:"SQL / データベース",note:"Supabase以上",s:"want"},
+    {name:"BIツール",note:"Metabase等",s:"none"},
+  ]},
+  {cat:"自動化 & 外部連携",icon:"&#x26D3;",items:[
+    {name:"Notion MCP",note:"DB操作、リレーション",s:"done"},
+    {name:"Google Drive連携",note:"ドキュメント管理",s:"done"},
+    {name:"Slack MCP",note:"メッセージ、検索",s:"done"},
+    {name:"Gmail MCP",note:"スレッド検索",s:"done"},
+    {name:"Make / Zapier",note:"ノーコード自動化",s:"want"},
+    {name:"カレンダーAPI",note:"自動スケジュール",s:"want"},
+    {name:"Webhook / n8n",note:"イベント駆動型",s:"none"},
+  ]},
+  {cat:"AIクリエイティブ",icon:"&#x1F3A8;",items:[
+    {name:"AIライティング",note:"新書エッセイ",s:"done"},
+    {name:"プレゼンAI",note:"Slidev、レビュー",s:"done"},
+    {name:"デザイン（HTML/CSS）",note:"フライヤー、名刺",s:"done"},
+    {name:"画像生成",note:"Midjourney, DALL-E",s:"want"},
+    {name:"動画生成",note:"Sora, Runway",s:"want"},
+    {name:"音声AI / TTS",note:"ElevenLabs",s:"want"},
+    {name:"音楽生成",note:"Suno, Udio",s:"none"},
+  ]},
+  {cat:"上級AI & エージェント",icon:"&#x1F9E0;",items:[
+    {name:"MCPサーバー活用",note:"既製MCPの利用",s:"done"},
+    {name:"AIエージェントSDK",note:"自律型エージェント",s:"want"},
+    {name:"RAG / ナレッジベース",note:"社内文書AI検索",s:"want"},
+    {name:"Claude API直接利用",note:"独自アプリ組込み",s:"want"},
+    {name:"ファインチューニング",note:"モデルカスタマイズ",s:"none"},
+    {name:"ML / ディープラーニング",note:"PyTorch等",s:"none"},
+  ]},
+  {cat:"クラウド & インフラ",icon:"&#x2601;",items:[
+    {name:"Netlify",note:"静的サイトデプロイ",s:"done"},
+    {name:"GitHub Pages",note:"HTMLホスティング",s:"done"},
+    {name:"Vercel",note:"Next.jsデプロイ",s:"want"},
+    {name:"Supabase",note:"認証、PostgreSQL",s:"done"},
+    {name:"AWS / GCP",note:"クラウド",s:"none"},
+    {name:"独自ドメイン / DNS",note:"ドメイン設定",s:"none"},
+  ]},
+];
+
+const KEY="ai-skill-v2";
+const CYCLE=["done","want","none"];
+const LABELS={done:"できる",want:"やりたい",none:"未着手"};
+let filter="all", collapsed={}, teach={};
+
+function load(){
+  try{const d=JSON.parse(localStorage.getItem(KEY));if(!d)return;
+    if(d.skills) SKILLS.forEach(c=>c.items.forEach(i=>{const k=c.cat+"/"+i.name;if(d.skills[k])i.s=d.skills[k]}));
+    if(d.teach) teach=d.teach;
+    if(d.custom) d.custom.forEach(ci=>{const cat=SKILLS.find(c=>c.cat===ci.cat);
+      if(cat&&!cat.items.find(i=>i.name===ci.name)) cat.items.push({name:ci.name,note:ci.note||"",s:ci.s||"want",custom:true});
+    });
+  }catch{}
+}
+
+function save(){
+  const skills={},custom=[];
+  SKILLS.forEach(c=>c.items.forEach(i=>{skills[c.cat+"/"+i.name]=i.s;if(i.custom)custom.push({cat:c.cat,name:i.name,note:i.note,s:i.s})}));
+  localStorage.setItem(KEY,JSON.stringify({skills,teach,custom}));
+}
+
+function render(){
+  const app=document.getElementById("skillApp");
+  let html="";
+  SKILLS.forEach((c,ci)=>{
+    const items=filter==="all"?c.items:filter==="teach"?c.items.filter(i=>teach[c.cat+"/"+i.name]):c.items.filter(i=>i.s===filter);
+    if(!items.length)return;
+    const done=c.items.filter(i=>i.s==="done").length;
+    const shut=collapsed[ci];
+    html+=`<div class="cat"><div class="cat-hd" onclick="tog(${ci})">
+      <span class="cat-ic">${c.icon}</span><span class="cat-nm">${c.cat}</span>
+      <span class="cat-ct">${done}/${c.items.length}</span>
+      <span class="cat-arr ${shut?'shut':''}">&#9660;</span></div>
+      <div class="cat-body ${shut?'hide':''}">`;
+    items.forEach(i=>{
+      const idx=c.items.indexOf(i);
+      const tKey=c.cat+"/"+i.name;
+      const isTeach=teach[tKey];
+      html+=`<div class="sk is-${i.s}">
+        <div class="dot ${i.s}" onclick="cyc(${ci},${idx})"></div>
+        <span class="sk-name" onclick="cyc(${ci},${idx})">${i.name}</span>
+        <span class="sk-note">${i.note}</span>
+        <span class="sk-lbl ${i.s}" onclick="cyc(${ci},${idx})">${LABELS[i.s]}</span>
+        <button class="teach-btn ${isTeach?'on':''}" onclick="togTeach('${tKey.replace(/'/g,"\\'")}')">${isTeach?'&#x1F64B; 教えて！':'教えて'}</button>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  });
+  app.innerHTML=html;
+  renderTeach();
+}
+
+function cyc(ci,ii){SKILLS[ci].items[ii].s=CYCLE[(CYCLE.indexOf(SKILLS[ci].items[ii].s)+1)%3];save();render()}
+function tog(ci){collapsed[ci]=!collapsed[ci];render()}
+function togTeach(key){if(teach[key])delete teach[key];else teach[key]=true;save();render()}
+
+function renderTeach(){
+  const el=document.getElementById("teachList");
+  const keys=Object.keys(teach);
+  if(!keys.length){el.innerHTML='<div class="empty-msg">まだ「教えて」マークされたスキルはありません</div>';return}
+  let html="";
+  keys.forEach(k=>{
+    const[cat,name]=k.split("/");
+    html+=`<div class="teach-item"><div class="dot" style="background:#ff8844;box-shadow:0 0 5px rgba(255,136,68,0.3)"></div>
+      <span class="teach-item-name">${name}</span><span class="teach-item-cat">${cat}</span>
+      <button class="teach-remove" onclick="togTeach('${k.replace(/'/g,"\\'")}')">解除</button></div>`;
+  });
+  el.innerHTML=html;
+}
+
+function addItem(){
+  const name=document.getElementById("addName").value.trim();
+  const note=document.getElementById("addNote").value.trim();
+  const catName=document.getElementById("addCat").value;
+  if(!name)return;
+  const cat=SKILLS.find(c=>c.cat===catName);
+  if(!cat||cat.items.find(i=>i.name===name))return;
+  cat.items.push({name,note,s:"want",custom:true});
+  save();render();
+  document.getElementById("addName").value="";
+  document.getElementById("addNote").value="";
+}
+
+// タブ切替
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(x=>x.classList.remove("active"));
+  t.classList.add("active");
+  document.getElementById("panel-"+t.dataset.tab).classList.add("active");
+}));
+
+// フィルター
+document.querySelectorAll(".fbtn").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");filter=b.dataset.f;render();
+}));
+
+// カテゴリselect生成
+const sel=document.getElementById("addCat");
+SKILLS.forEach(c=>{const o=document.createElement("option");o.value=c.cat;o.textContent=c.cat;sel.appendChild(o)});
+
+load();render();
+</script>
+</body>
+</html>
