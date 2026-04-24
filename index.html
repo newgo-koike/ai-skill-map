@@ -162,6 +162,46 @@
   .teach-remove:hover{border-color:#ff4444;color:#ff4444}
   .empty-msg{font-size:12px;color:#555;text-align:center;padding:20px}
 
+  /* ========== モーダル ========== */
+  .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);
+    z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;
+    opacity:0;pointer-events:none;transition:opacity 0.25s}
+  .modal-overlay.open{opacity:1;pointer-events:auto}
+  .modal{background:#12122a;border:1px solid #2a2a5a;border-radius:14px;max-width:560px;width:100%;
+    max-height:85vh;overflow-y:auto;position:relative;transform:translateY(20px) scale(0.95);
+    transition:transform 0.25s}
+  .modal-overlay.open .modal{transform:translateY(0) scale(1)}
+  .modal-top{position:relative;padding:24px 24px 16px;overflow:hidden}
+  .modal-top::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+  .modal.type-skill .modal-top::before{background:linear-gradient(90deg,#00ff88,#00ff8833,transparent)}
+  .modal.type-system .modal-top::before{background:linear-gradient(90deg,#4488ff,#4488ff33,transparent)}
+  .modal.type-auto .modal-top::before{background:linear-gradient(90deg,#aa66ff,#aa66ff33,transparent)}
+  .modal-close{position:absolute;top:12px;right:16px;font-size:20px;color:#64748b;cursor:pointer;
+    background:none;border:none;padding:4px 8px;transition:color 0.15s}
+  .modal-close:hover{color:#fff}
+  .modal-icon{font-size:40px;margin-bottom:12px}
+  .modal-title{font-size:18px;font-weight:900;color:#ffd700;margin-bottom:4px}
+  .modal-tag-row{display:flex;gap:6px;align-items:center;margin-bottom:16px}
+  .modal-tag{font-size:10px;padding:3px 10px;border-radius:10px}
+  .modal-tag.skill{background:rgba(0,255,136,0.12);color:#00ff88}
+  .modal-tag.system{background:rgba(68,136,255,0.12);color:#4488ff}
+  .modal-tag.auto{background:rgba(170,102,255,0.12);color:#aa66ff}
+  .modal-body{padding:0 24px 24px}
+  .modal-section{margin-bottom:16px}
+  .modal-label{font-size:10px;color:#64748b;font-weight:700;letter-spacing:1px;margin-bottom:6px;
+    text-transform:uppercase}
+  .modal-text{font-size:13px;color:#c8c8e0;line-height:1.7}
+  .modal-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:4px}
+  .modal-flow-step{font-size:11px;padding:5px 12px;background:#1a1a2e;border:1px solid #2a2a5a;
+    border-radius:8px;color:#e0e0f0}
+  .modal-flow-arrow{color:#ffd700;font-size:14px}
+  .modal-tech-list{display:flex;gap:6px;flex-wrap:wrap}
+  .modal-tech-item{font-size:10px;padding:4px 10px;background:#0a0a1a;border:1px solid #2a2a5a;
+    border-radius:8px;color:#94a3b8}
+  .modal-merit{font-size:12px;color:#00ff88;padding:10px 14px;background:rgba(0,255,136,0.06);
+    border:1px solid rgba(0,255,136,0.15);border-radius:8px;line-height:1.6}
+  .port-card{cursor:pointer}
+
   /* レスポンシブ */
   @media(max-width:600px){
     .hero{flex-direction:column;text-align:center}
@@ -170,6 +210,7 @@
     .port-grid{grid-template-columns:1fr}
     .sk-note{display:none}
     .tabs{overflow-x:auto}
+    .modal{max-height:90vh;margin:10px}
   }
 </style>
 </head>
@@ -212,77 +253,36 @@
 
   <!-- ===== ポートフォリオ ===== -->
   <div class="tab-panel active" id="panel-portfolio">
-    <div class="section-title">構築した武器たち</div>
-    <div class="port-grid">
-      <div class="port-card type-auto">
-        <div class="port-head"><span class="port-icon">&#x1F4DD;</span><span class="port-title">議事録自動作成</span><span class="port-tag auto">自動化</span></div>
-        <div class="port-desc">Google Meet・Plaud・Zoomの文字起こしから議事録を自動生成し、NotionのMinute DBに保存 → Googleドキュメントにコピー</div>
-        <div class="port-tech"><span>Notion MCP</span><span>Google Drive</span><span>文字起こし解析</span></div>
+    <div class="section-title">構築した武器たち <span class="count" id="portCount"></span></div>
+    <div class="port-grid" id="portGrid"></div>
+  </div>
+
+  <!-- モーダル -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal" id="modalContent" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <div class="modal-icon" id="mIcon"></div>
+        <div class="modal-title" id="mTitle"></div>
+        <div class="modal-tag-row"><span class="modal-tag" id="mTag"></span></div>
       </div>
-      <div class="port-card type-system">
-        <div class="port-head"><span class="port-icon">&#x1F4CA;</span><span class="port-title">経営管理ダッシュボード</span><span class="port-tag system">システム</span></div>
-        <div class="port-desc">はなひらくグループの経営管理シート（Excel）からChart.jsのHTMLダッシュボードを自動生成。パスワード保護付きでNetlifyデプロイ</div>
-        <div class="port-tech"><span>Chart.js</span><span>Netlify</span><span>KPI</span><span>水位ゲージ</span></div>
-      </div>
-      <div class="port-card type-auto">
-        <div class="port-head"><span class="port-icon">&#x1F91D;</span><span class="port-title">採用パイプライン</span><span class="port-tag auto">自動化</span></div>
-        <div class="port-desc">面接（NotionAIメモ）→ 求職者管理DB自動登録 → 雇用契約書（労働条件通知書）HTML/PDF自動生成の一連フロー</div>
-        <div class="port-tech"><span>Notion MCP</span><span>HTML→PDF</span><span>Chrome headless</span></div>
-      </div>
-      <div class="port-card type-system">
-        <div class="port-head"><span class="port-icon">&#x1F3E2;</span><span class="port-title">はなひらく運営ポータル</span><span class="port-tag system">システム</span></div>
-        <div class="port-desc">運営メンバー向けWebポータル。月次リマインダー、書類テンプレート、ショートカット集、権限管理</div>
-        <div class="port-tech"><span>Next.js</span><span>Supabase</span><span>TypeScript</span><span>Tailwind</span></div>
-      </div>
-      <div class="port-card type-system">
-        <div class="port-head"><span class="port-icon">&#x1F4B0;</span><span class="port-title">PHC売上管理システム</span><span class="port-tag system">システム</span></div>
-        <div class="port-desc">案件別売上・経費・メンバー配分を自動計算。ダッシュボード付き。税金推定（消費税・法人税・住民税・事業税）</div>
-        <div class="port-tech"><span>Google Sheets</span><span>税金計算</span><span>配分ロジック</span></div>
-      </div>
-      <div class="port-card type-auto">
-        <div class="port-head"><span class="port-icon">&#x1F4CB;</span><span class="port-title">保険契約自動登録</span><span class="port-tag auto">自動化</span></div>
-        <div class="port-desc">ソニー生命・メディケア生命の契約スクリーンショットを読み取り、Excel契約一覧 + Notion保険DBに自動登録</div>
-        <div class="port-tech"><span>Vision/OCR</span><span>Notion MCP</span><span>Excel</span></div>
-      </div>
-      <div class="port-card type-auto">
-        <div class="port-head"><span class="port-icon">&#x1F4E8;</span><span class="port-title">ソニー生命 送付状</span><span class="port-tag auto">自動化</span></div>
-        <div class="port-desc">書類の写メから証券番号・契約者名等を読み取り、送付状HTML → PDF自動生成</div>
-        <div class="port-tech"><span>Vision/OCR</span><span>HTML→PDF</span></div>
-      </div>
-      <div class="port-card type-skill">
-        <div class="port-head"><span class="port-icon">&#x1F3A4;</span><span class="port-title">セミナースライド生成</span><span class="port-tag skill">スキル</span></div>
-        <div class="port-desc">Slidevでプロ品質のセミナー・登壇スライドを自動生成。devサーバー起動まで自動化</div>
-        <div class="port-tech"><span>Slidev</span><span>Markdown</span><span>npm</span></div>
-      </div>
-      <div class="port-card type-skill">
-        <div class="port-head"><span class="port-icon">&#x1F50D;</span><span class="port-title">スライドレビューAI</span><span class="port-tag skill">スキル</span></div>
-        <div class="port-desc">タイポグラフィ・レイアウト・色・情報密度・会場適合性の観点からスライドを自動レビュー</div>
-        <div class="port-tech"><span>デザイン分析</span><span>多形式対応</span></div>
-      </div>
-      <div class="port-card type-skill">
-        <div class="port-head"><span class="port-icon">&#x1F4D6;</span><span class="port-title">新書エッセイ執筆</span><span class="port-tag skill">スキル</span></div>
-        <div class="port-desc">キーワードからWeb検索 → 15分で読める4,000〜5,000字の書き下ろし新書をNotionに保存</div>
-        <div class="port-tech"><span>Web検索</span><span>Notion MCP</span><span>だ・である調</span></div>
-      </div>
-      <div class="port-card type-skill">
-        <div class="port-head"><span class="port-icon">&#x1F3E0;</span><span class="port-title">不動産CFシミュレーション</span><span class="port-tag skill">スキル</span></div>
-        <div class="port-desc">初期費用・融資条件・家賃収入から10年間の収支シミュレーションHTMLを生成、GitHub Pagesにデプロイ</div>
-        <div class="port-tech"><span>HTML</span><span>GitHub Pages</span><span>CF計算</span></div>
-      </div>
-      <div class="port-card type-skill">
-        <div class="port-head"><span class="port-icon">&#x267B;</span><span class="port-title">メタスキル（create-skill）</span><span class="port-tag skill">スキル</span></div>
-        <div class="port-desc">Claude Codeスキルを自動生成するメタスキル。SKILL.mdの作成からNotion DB登録まで自動化</div>
-        <div class="port-tech"><span>SKILL.md</span><span>Notion DB</span><span>自己増殖</span></div>
-      </div>
-      <div class="port-card type-skill">
-        <div class="port-head"><span class="port-icon">&#x1F5BC;</span><span class="port-title">デザイン / 名刺</span><span class="port-tag skill">スキル</span></div>
-        <div class="port-desc">サムネイル・フライヤー・バナー・名刺などのグラフィックデザインをHTML/CSSで生成</div>
-        <div class="port-tech"><span>HTML/CSS</span><span>印刷対応</span></div>
-      </div>
-      <div class="port-card type-skill">
-        <div class="port-head"><span class="port-icon">&#x1F4BC;</span><span class="port-title">ベンチャー会議シミュレーション</span><span class="port-tag skill">スキル</span></div>
-        <div class="port-desc">事業アイディアから6人の専門家（CEO/CTO/CMO/CFO/PM/Devil's Advocate）が議論をシミュレーション</div>
-        <div class="port-tech"><span>ロールプレイ</span><span>戦略設計</span></div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="modal-label">どんな武器？</div>
+          <div class="modal-text" id="mDesc"></div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-label">使い方・フロー</div>
+          <div class="modal-flow" id="mFlow"></div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-label">使用技術</div>
+          <div class="modal-tech-list" id="mTech"></div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-label">何が嬉しい？</div>
+          <div class="modal-merit" id="mMerit"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -374,6 +374,119 @@
 </div>
 
 <script>
+// ===== ポートフォリオデータ =====
+const PORTFOLIO=[
+  {icon:"\u{1F4DD}",title:"議事録自動作成",type:"auto",typeName:"自動化",
+    desc:"Google Meet・Plaud・Zoomなどの文字起こしデータを解析し、Pharma Eight\u221eの議事録フォーマットで自動作成。NotionのMinuteデータベースにページを作成した後、対応するGoogleドキュメントに新しいタブとしてコピーする。",
+    flow:["会議の文字起こし","\u2192","AI が要約・構造化","\u2192","Notion Minute DBに保存","\u2192","Google Docsにコピー"],
+    tech:["Notion MCP","Google Drive","文字起こし解析","Markdown"],
+    merit:"会議後の議事録作成が手作業30分\u21921分に。書き漏らしゼロ、フォーマットも統一される。"},
+  {icon:"\u{1F4CA}",title:"経営管理ダッシュボード",type:"system",typeName:"システム",
+    desc:"はなひらくグループの経営管理シート（Excel）を読み込み、Chart.jsを使った美しいHTMLダッシュボードを自動生成。月次収支・累計収支・稼働率水位ゲージ・経費内訳・給付費推移・平均工賃推移・PLテーブルを一画面で俯瞰できる。パスワード保護付きでNetlifyにデプロイ済み。",
+    flow:["Excel経営管理シート","\u2192","データ解析","\u2192","Chart.js HTML生成","\u2192","Netlifyデプロイ"],
+    tech:["Chart.js","Netlify","KPIカード","水位ゲージ","パスワード保護"],
+    merit:"毎月の経営状況を一目で把握。グラフ・ゲージで直感的に分かるので、経営会議の質が上がる。"},
+  {icon:"\u{1F91D}",title:"採用パイプライン",type:"auto",typeName:"自動化",
+    desc:"はなひらくの採用面接が終わったら、NotionAIミーティングメモから求職者情報（氏名・希望職種・連絡先等）を自動抽出し、求職者管理DBに登録。採用が決まったらDB情報から労働条件通知書 兼 雇用契約書のHTMLを生成し、Chrome headlessでPDF化する。面接から契約書まで一気通貫。",
+    flow:["面接実施","\u2192","NotionAIメモ","\u2192","求職者DB自動登録","\u2192","採用決定","\u2192","契約書PDF生成"],
+    tech:["Notion MCP","HTML\u2192PDF","Chrome headless","リレーションDB"],
+    merit:"面接後の手入力・契約書の手書きがゼロに。38件の過去データもExcelからNotionに一括移行済み。"},
+  {icon:"\u{1F3E2}",title:"はなひらく運営ポータル",type:"system",typeName:"システム",
+    desc:"はなひらくグループの運営メンバー4-5人向けのWebポータル。Notionに不慣れなメンバーでもシンプルに使えるUI。月次リマインダー（請求・支払・報告）、書類テンプレート出力、各種スプレッドシートへのショートカット集、admin/memberの権限管理を搭載。",
+    flow:["ログイン（Supabase Auth）","\u2192","ダッシュボード","\u2192","リマインダー / ショートカット / 書類"],
+    tech:["Next.js 16","Supabase","TypeScript","Tailwind CSS","shadcn/ui"],
+    merit:"ITに不慣れなメンバーでも迷わず使える「入口」。情報へのアクセスが統一される。"},
+  {icon:"\u{1F4B0}",title:"PHC売上管理システム",type:"system",typeName:"システム",
+    desc:"パブリックヘルスコンサルティング合同会社の売上管理。案件ごとの作業項目レベルでメンバー配分%を設定し、配分額を自動計算。PHC留保20%・紹介者取分10%・配分可能額70%のロジック。消費税（簡易課税）・法人税・住民税・事業税の推定機能付きダッシュボード。",
+    flow:["案件・作業項目を入力","\u2192","配分%設定","\u2192","自動計算（留保/紹介/配分）","\u2192","ダッシュボードで俯瞰"],
+    tech:["Google Sheets","税金計算","配分ロジック","メンバー月次集計"],
+    merit:"複雑な配分計算を自動化。納税推定額もリアルタイムで分かるので、資金繰りの判断が早くなる。"},
+  {icon:"\u{1F4CB}",title:"保険契約自動登録",type:"auto",typeName:"自動化",
+    desc:"ソニー生命・メディケア生命の契約画面のスクリーンショットをアップロードするだけで、契約内容（証券番号・契約者・保険種類・保険料等）をAIが読み取り、Excel契約一覧表への入力とNotion保険契約DBへの登録を同時に行う。",
+    flow:["契約スクショをアップ","\u2192","AIが内容読み取り","\u2192","Excel一覧に入力","\u2192","Notion DBに登録"],
+    tech:["Vision/OCR","Notion MCP","Excel","画像解析"],
+    merit:"契約情報の手打ちミスがなくなる。スクショ1枚で二重入力が完了する時短効果。"},
+  {icon:"\u{1F4E8}",title:"ソニー生命 送付状",type:"auto",typeName:"自動化",
+    desc:"ソニー生命への書類送付時、書類の写メをアップロードするだけで証券番号・契約者名・被保険者名・書類種別を読み取り、正式なフォーマットの送付状（A4タテ1枚）をHTML生成→Chrome headlessでPDF変換する。",
+    flow:["書類の写メをアップ","\u2192","AIが情報読取","\u2192","送付状HTML生成","\u2192","PDF変換"],
+    tech:["Vision/OCR","HTML\u2192PDF","Chrome headless","A4フォーマット"],
+    merit:"送付状を手書きする手間がゼロに。フォーマットも毎回完璧。"},
+  {icon:"\u{1F3A4}",title:"セミナースライド生成",type:"skill",typeName:"スキル",
+    desc:"セミナー・登壇・クライアント向けのプレゼンスライドをSlidev（Markdownベース）で自動生成。プロ品質のデザインテンプレートを参照し、npm install + devサーバー起動まで自動で行う。",
+    flow:["テーマ・内容を伝える","\u2192","Slidev Markdown生成","\u2192","devサーバー起動","\u2192","ブラウザでプレビュー"],
+    tech:["Slidev","Markdown","npm","Vue.js"],
+    merit:"スライド作成の時間が大幅短縮。デザインの一貫性も自動で担保。"},
+  {icon:"\u{1F50D}",title:"スライドレビューAI",type:"skill",typeName:"スキル",
+    desc:"プレゼン・セミナー用スライドを7つの観点（タイポグラフィ/レイアウト/色・コントラスト/情報密度/ビジュアル/会場適合性/アンチパターン）から自動レビュー。Markdown、HTML、PowerPoint、Keynote、PDF、画像スクショに対応。",
+    flow:["スライドファイルを指定","\u2192","7観点で自動分析","\u2192","改善提案レポート出力"],
+    tech:["デザイン分析","多形式対応","7観点レビュー"],
+    merit:"自分では気づかないデザインの問題点を客観的に指摘してくれる、AIデザインコーチ。"},
+  {icon:"\u{1F4D6}",title:"新書エッセイ執筆",type:"skill",typeName:"スキル",
+    desc:"キーワードを受け取り、Web検索で最新情報をリサーチした上で15分で読み切れる書き下ろし新書エッセイ（4,000〜5,000文字、だ・である調）を日本語で執筆。NotionのMybookデータベースに保存する。",
+    flow:["キーワードを指定","\u2192","Web検索でリサーチ","\u2192","4,000-5,000字執筆","\u2192","Notion Mybookに保存"],
+    tech:["Web検索","Notion MCP","だ・である調","新書フォーマット"],
+    merit:"自分の知的好奇心を本の形に残せる。アウトプットの習慣化ツール。"},
+  {icon:"\u{1F3E0}",title:"不動産CFシミュレーション",type:"skill",typeName:"スキル",
+    desc:"初期費用・融資条件・家賃収入・運営費を入力すると、10年間の収支シミュレーションをインタラクティブなHTMLファイルとして生成し、GitHub Pagesにデプロイする。",
+    flow:["物件条件を入力","\u2192","10年間CF計算","\u2192","HTML生成","\u2192","GitHub Pagesデプロイ"],
+    tech:["HTML/JS","GitHub Pages","CF計算","インタラクティブUI"],
+    merit:"不動産投資の判断材料を即座にシミュレーション。URLで誰にでも共有できる。"},
+  {icon:"\u267B\uFE0F",title:"メタスキル（create-skill）",type:"skill",typeName:"スキル",
+    desc:"Claude Codeのスキルを自動生成するための「スキルを作るスキル」。SKILL.mdの作成、参照ファイルの配置、Notion「Claude Codeスキル一覧」DBへの自動登録まで一気に行う。武器が武器を生む自己増殖型システム。",
+    flow:["スキルの要件を伝える","\u2192","SKILL.md自動生成","\u2192","参照ファイル配置","\u2192","Notion DB登録"],
+    tech:["SKILL.md","Notion DB","メタプログラミング","自己増殖"],
+    merit:"新しいスキルの追加が圧倒的に早くなる。スキル開発の生産性が倍増。"},
+  {icon:"\u{1F5BC}",title:"デザイン / 名刺",type:"skill",typeName:"スキル",
+    desc:"サムネイル・フライヤー・バナー・SNS投稿画像・名刺などのグラフィックデザインをHTML/CSSで生成。印刷対応のレイアウトも可能。",
+    flow:["デザインのイメージを伝える","\u2192","HTML/CSS生成","\u2192","ブラウザで確認","\u2192","PDF化（印刷用）"],
+    tech:["HTML/CSS","印刷対応","レスポンシブ"],
+    merit:"デザイナーに外注せずに、即座にプロレベルのデザインが手に入る。"},
+  {icon:"\u{1F4BC}",title:"ベンチャー会議シミュレーション",type:"skill",typeName:"スキル",
+    desc:"雑な事業アイディアから6人の専門家（CEO/ビジョナリー、CTO/技術リード、CMO/マーケティング戦略家、CFO/財務アナリスト、プロダクトマネージャー、Devil's Advocate/批判的吟味者）が、市場リサーチ・競合分析・戦略設計・リスク評価・アクションプランまでを一気通貫で議論する。",
+    flow:["事業アイディアを入力","\u2192","6人の専門家が議論","\u2192","戦略・リスク・アクションプラン出力"],
+    tech:["ロールプレイ","Web検索","戦略設計","多角的分析"],
+    merit:"一人ブレストの限界を突破。思いつきレベルのアイディアでも、専門家6人分の視点で磨ける。"},
+];
+
+function renderPortfolio(){
+  const grid=document.getElementById("portGrid");
+  document.getElementById("portCount").textContent=`${PORTFOLIO.length}個の武器`;
+  grid.innerHTML=PORTFOLIO.map((p,i)=>`
+    <div class="port-card type-${p.type}" onclick="openModal(${i})">
+      <div class="port-head"><span class="port-icon">${p.icon}</span><span class="port-title">${p.title}</span><span class="port-tag ${p.type}">${p.typeName}</span></div>
+      <div class="port-desc">${p.desc.substring(0,60)}...</div>
+      <div class="port-tech">${p.tech.slice(0,3).map(t=>`<span>${t}</span>`).join("")}</div>
+    </div>`).join("");
+}
+
+function openModal(i){
+  const p=PORTFOLIO[i];
+  const m=document.getElementById("modalContent");
+  m.className="modal type-"+p.type;
+  document.getElementById("mIcon").textContent=p.icon;
+  document.getElementById("mTitle").textContent=p.title;
+  const tag=document.getElementById("mTag");
+  tag.textContent=p.typeName;tag.className="modal-tag "+p.type;
+  document.getElementById("mDesc").textContent=p.desc;
+  document.getElementById("mFlow").innerHTML=p.flow.map(s=>
+    s==="\u2192"?`<span class="modal-flow-arrow">\u2192</span>`:`<span class="modal-flow-step">${s}</span>`
+  ).join("");
+  document.getElementById("mTech").innerHTML=p.tech.map(t=>`<span class="modal-tech-item">${t}</span>`).join("");
+  document.getElementById("mMerit").textContent=p.merit;
+  document.getElementById("modalOverlay").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+
+function closeModal(e){
+  if(e&&e.target!==document.getElementById("modalOverlay"))return;
+  document.getElementById("modalOverlay").classList.remove("open");
+  document.body.style.overflow="";
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+renderPortfolio();
+
+// ===== スキルマップデータ =====
 const SKILLS=[
   {cat:"プロンプト & AIチャット",icon:"&#x1F4AC;",items:[
     {name:"プロンプト設計",note:"スキル用プロンプト",s:"done"},
