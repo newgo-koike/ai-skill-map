@@ -32,7 +32,7 @@
   .lv-sub{font-size:10px;color:#8888aa;margin-top:4px}
   .xp-outer{width:140px;height:8px;background:#1a1a2e;border-radius:4px;margin-top:6px;
     border:1px solid #2a2a5a;overflow:hidden}
-  .xp-inner{height:100%;width:58%;background:linear-gradient(90deg,#00aa55,#00ff88);
+  .xp-inner{height:100%;width:68%;background:linear-gradient(90deg,#00aa55,#00ff88);
     border-radius:4px;box-shadow:0 0 8px rgba(0,255,136,0.3)}
 
   /* ========== タブ ========== */
@@ -237,7 +237,7 @@
       <div class="hero-class">AI自動化魔導士 / プロンプト設計士</div>
     </div>
     <div class="hero-right">
-      <div class="lv">Lv.58</div>
+      <div class="lv">Lv.68</div>
       <div class="lv-sub">58 / 100</div>
       <div class="xp-outer"><div class="xp-inner"></div></div>
     </div>
@@ -446,6 +446,51 @@ const PORTFOLIO=[
     flow:["事業アイディアを入力","\u2192","6人の専門家が議論","\u2192","戦略・リスク・アクションプラン出力"],
     tech:["ロールプレイ","Web検索","戦略設計","多角的分析"],
     merit:"一人ブレストの限界を突破。思いつきレベルのアイディアでも、専門家6人分の視点で磨ける。"},
+  {icon:"\u{1F3AF}",title:"目標進捗管理ツール（Goal Tracker）",type:"system",typeName:"システム",
+    desc:"ゴール→要素→マイルストーン→ギャップ→コミット→アクション→数字 の7階層カスケードで目標管理。下位の数字を入力すると上位の進捗が自動でロールアップ。決定/見込分離KPI、5プリセット（営業/クリエイター/経営者/個人/白紙）、4テーマ切替を搭載。単体動作＋Personal OS埋込両対応。GitHub Pages公開済み。",
+    flow:["ゴールを書く","→","要素・マイルストーン・コミットに分解","→","週次でアクション+数字入力","→","上位進捗が自動連動"],
+    tech:["HTML/JS","localStorage","CSS変数テーマ","JSON Export/Import"],
+    merit:"「ゴールから降ろしたカスケードと数字が下から上に積み上がる」体験。世界一の行動管理ツールを目指して構築。"},
+  {icon:"\u{1FAAA}",title:"プロフィールサイト",type:"system",typeName:"システム",
+    desc:"小池雄悟の個人プロフィールサイト。Hero/事業（5社）/Gallery/PharmaEight∞/Story（5章）/Values（情緒経済5原則）/Contact構成。content.md編集→index.htmlに反映する運用。GitHub Pages公開。",
+    flow:["content.md編集","→","index.html反映","→","GitHub Pagesデプロイ"],
+    tech:["HTML/CSS","GitHub Pages","content-driven"],
+    merit:"事業・思想・ストーリーを1ページに集約。Pharma Eight∞ の入口資産・名刺代わり。"},
+  {icon:"\u{1F4B0}",title:"FP実績ダッシュボード",type:"auto",typeName:"自動化",
+    desc:"FPコミッション計算表+保険本数ランキング表のスクショ2枚から数値を読み取り、実績推移スプレッドシートへ自動転記、ダッシュボードHTMLを生成しGitHub Pagesにデプロイする。当月コミッション・YTD・通算累計・自己ベスト・年次推移・対前年同月比較・適用レート・B収入・マイルストーンを一画面で。",
+    flow:["スクショ2枚","→","Vision読取","→","Sheets書込","→","ダッシュHTML生成","→","Pagesデプロイ"],
+    tech:["Vision/OCR","Google Sheets","Chart.js","GitHub Pages"],
+    merit:"月1回の実績振り返りがワンコマンドで完結。経営状況を一目で把握。"},
+  {icon:"\u{1F465}",title:"Teamカルテ",type:"system",typeName:"システム",
+    desc:"17名のビジネス指導メンバー育成カルテ。Notionから取得したプロフィール/目標/約束事/ロードマップ/資料 + チーム図（Google Sheet）を一元化。AES-GCMパスワード保護でGitHub Pages公開。",
+    flow:["Notionから取得","→","HTMLダッシュボード生成","→","AES-GCM暗号化","→","Pagesデプロイ"],
+    tech:["Notion MCP","AES-GCM","GitHub Pages","パスワード保護"],
+    merit:"指導メンバー17名の状態を1つのダッシュボードで把握。1on1の準備が圧倒的に早くなる。"},
+  {icon:"\u{1F4F0}",title:"NewGo Timez（毎朝の新聞）",type:"auto",typeName:"自動化",
+    desc:"毎朝6時にLaunchAgentで自動実行。WebSearch+WebFetchで6カテゴリ（政治経済/AI・テック/スタートアップ/薬剤師/障がい福祉/長野）の最新ニュースを収集→昔ながらの新聞紙風（モノクロ・スマホ最適）HTML生成→GitHub Pagesにバックナンバー保管→LINE「秘書」Botで通知。",
+    flow:["朝6時自動起動","→","Web検索6カテゴリ","→","新聞HTML生成","→","Pages保管","→","LINE通知"],
+    tech:["WebSearch","LaunchAgent","GitHub Pages","LINE API"],
+    merit:"毎朝、自分の関心領域だけが詰まった専用新聞が届く。情報収集の質と速度が劇的に変わる。"},
+  {icon:"\u{1F4D1}",title:"事業計画・マーケ・コピー 三点セット",type:"skill",typeName:"スキル",
+    desc:"コンサル系3スキル統合：business-consultant（市場分析・STP・競合・ユニットエコノミクス・90日ロードマップ・KPI・リスク等13章）、marketing-consultant（KGI→WHO→WHAT→HOW、3円インサイト、ファネル施策マップ）、copywriter（コアメッセージ/LP/SNS/メール/広告/セールス台本）。全てHTML+PDF保存ボタン付き。",
+    flow:["事業アイディアを伝える","→","Web検索リサーチ","→","HTML資料生成","→","PDF保存"],
+    tech:["WebSearch","HTML/CSS","PDF出力","13章構成"],
+    merit:"事業立ち上げ時のドキュメント3点セットがその場で揃う。プロのコンサルが1人ついている感覚。"},
+  {icon:"\u{1F36A}",title:"叶花-kanoka- 栄養ラベル生成",type:"auto",typeName:"自動化",
+    desc:"焼菓子の食品ラベル（一括表示+栄養成分+アレルゲン）をレシピYAML（材料・分量・収量）から自動計算してA4面付けPDFまで生成。複数ラベル規格切替可能（叶花標準18面/A-one 31275/コーヒー用12面）。Canon TS7530（家庭用インクジェット）で小サイズ印刷できる品質。",
+    flow:["レシピYAML編集","→","栄養計算","→","HTML生成","→","A4面付けPDF"],
+    tech:["YAML","栄養計算","HTML→PDF","印刷対応"],
+    merit:"ラベル作成が手作業30分→1分に。複数規格の切替も1コマンド。"},
+  {icon:"\u{1F3E5}",title:"給付費請求集計（はなひらく）",type:"auto",typeName:"自動化",
+    desc:"はなひらくの月次給付費請求PDF（knowbe業務支援）と業務日誌PDFから利用者ごとの利用日数合計、就継B処遇改善加算Ⅱのサービス単位数合計、一日一人単価、開所日、1日平均利用人数を集計。寿/塩尻事業所別に出力＋合算サマリ。",
+    flow:["請求PDF＋業務日誌","→","データ抽出","→","事業所別集計","→","合算サマリ出力"],
+    tech:["PDF解析","集計ロジック","事業所マッピング"],
+    merit:"月次の給付費分析が手作業→自動に。経営判断のスピードが上がる。"},
+  {icon:"\u{1F4C5}",title:"コーチング予約・同席依頼ツール",type:"system",typeName:"システム",
+    desc:"GAS Webアプリ2種：①コーチングセッション予約（5カレンダー横断で空き枠自動算出→予約→Meet付与+Notion議事録ページ自動生成+LINE通知）、②同席依頼フォーム（FP同席をフォーム入力→自動カレンダー登録+通知）。予約者がURLにアクセスするだけで完結。",
+    flow:["URLアクセス","→","空き枠自動算出","→","予約確定","→","カレンダー＋Notion＋LINE自動連動"],
+    tech:["GAS","Google Calendar","Notion API","LINE API"],
+    merit:"予約調整のメッセージ往復がゼロに。議事録ページも事前に自動生成されるので会議準備が楽。"},
 ];
 
 function renderPortfolio(){
@@ -505,8 +550,8 @@ const SKILLS=[
     {name:"不動産投資のシミュレーションを作る",note:"10年間CF計算",s:"done"},
     {name:"人事評価システムを構築する",note:"評価シート・集計",s:"want"},
     {name:"顧客管理（CRM）を作る",note:"連絡先・商談管理",s:"want"},
-    {name:"予約管理システムを作る",note:"空き枠・自動確認",s:"want"},
-    {name:"自社のWebサイトを作る",note:"LP・コーポレート",s:"none"},
+    {name:"予約管理システムを作る",note:"コーチング予約・同席依頼",s:"done"},
+    {name:"自社のWebサイトを作る",note:"プロフィールサイト",s:"done"},
   ]},
   {cat:"AIでコンテンツを作る",icon:"&#x1F3A8;",items:[
     {name:"プレゼン資料を自動で作る",note:"Slidev・セミナー用",s:"done"},
@@ -531,9 +576,9 @@ const SKILLS=[
     {name:"Google Driveのファイルを自動管理する",note:"コピー・移動",s:"done"},
     {name:"Slackにメッセージを自動送信する",note:"通知・検索",s:"done"},
     {name:"Gmailを検索・整理する",note:"ラベル・下書き",s:"done"},
-    {name:"Googleカレンダーを自動操作する",note:"予定登録・通知",s:"want"},
+    {name:"Googleカレンダーを自動操作する",note:"5カレンダー横断・空き判定",s:"done"},
     {name:"ノーコードツールで自動化を組む",note:"Make・Zapier",s:"want"},
-    {name:"LINEに自動通知を送る",note:"LINE Notify等",s:"none"},
+    {name:"LINEに自動通知を送る",note:"議事録・新聞・予約通知",s:"done"},
   ]},
   {cat:"Webサイトを公開する",icon:"&#x1F310;",items:[
     {name:"作ったページをネットに公開する",note:"Netlify・GitHub Pages",s:"done"},
@@ -545,7 +590,7 @@ const SKILLS=[
     {name:"AIにいい指示を出せるようになる",note:"プロンプト設計",s:"done"},
     {name:"AIに写真を読み取らせる",note:"OCR・画像解析",s:"done"},
     {name:"複数のAIツールを連携させる",note:"MCP活用",s:"done"},
-    {name:"自分専用のAIアプリを作る",note:"Claude API組込み",s:"want"},
+    {name:"自分専用のAIアプリを作る",note:"Goal Tracker・Personal OS等",s:"done"},
     {name:"社内マニュアルをAIが答えてくれるようにする",note:"RAG構築",s:"want"},
     {name:"AIが自律的に仕事をしてくれる仕組みを作る",note:"エージェント",s:"want"},
     {name:"事業アイディアをAIにブレストしてもらう",note:"6人会議",s:"done"},
