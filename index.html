@@ -491,6 +491,11 @@ const PORTFOLIO=[
     flow:["URLアクセス","→","空き枠自動算出","→","予約確定","→","カレンダー＋Notion＋LINE自動連動"],
     tech:["GAS","Google Calendar","Notion API","LINE API"],
     merit:"予約調整のメッセージ往復がゼロに。議事録ページも事前に自動生成されるので会議準備が楽。"},
+  {icon:"\u{1F4C6}",title:"打ち合わせ予約システム（3種）＋予約リンク集",type:"system",typeName:"システム",
+    desc:"お打ち合わせ・はなひらくMTG・FP相談の3種のGAS予約フォームを新設。5カレンダー横断で空き枠を自動算出し、Web/対面を予約者が選択。WebはMeet URL自動発行、対面は場所希望を入力。予約者に確認メール、小池の秘書にLINE通知。予約リンク集（koike-booking.surge.sh）で全URLを一括管理、コピーワンタップで共有。",
+    flow:["koike-booking.surge.shでURLコピー","→","相手がフォームで予約","→","Web/対面選択","→","カレンダー＋Meet＋LINE自動連動"],
+    tech:["GAS","Google Calendar","LINE API","Surge.sh"],
+    merit:"「どのURLを送ればいい？」が1ページで解決。相手に送るURLのコピーもワンタップ、予約調整のやりとりがゼロに。"},
 ];
 
 function renderPortfolio(){
